@@ -145,7 +145,7 @@ func parse(textarea string) (res string, err error) {
 	end := time.Date(now.Year(), now.Month()+1, 1, 0, 0, 0, 0, time.UTC)
 	end = end.AddDate(0, 0, -1)
 
-	diff =(float64(now.Day()) / float64(end.Day()))- CmlRate
+	diff = CmlRate-(float64(now.Day()) / float64(end.Day()))
 
 	//统计数据
 
@@ -344,7 +344,7 @@ func printPart(parts []Part) string {
 }
 
 func printReport(report Report) string {
-	res := fmt.Sprintf("全国%s       \n\t全月目标：%s  \n\t日销售：%s      \n\t本月累计：%s        \n\t完成率：%s       \n\t差异：%s          \n\t成交率：%s       \n\t预约金额占比：%s      \n\t预约到店率%s  \n\t预约到店成交率：%s  \n\t今日新增微粉：%s     \n\t本月新增微粉：%s       \n\t本月微粉成交单数/金额：%s\n\t",
+	res := fmt.Sprintf("全国%s       \n\t全月目标：%s  \n\t日销售：%s      \n\t本月累计：%s        \n\t完成率：%s       \n\t差异：%s          \n\t成交率：%s       \n\t预约金额占比：%s      \n\t预约到店率:%s  \n\t预约到店成交率：%s  \n\t今日新增微粉：%s     \n\t本月新增微粉：%s       \n\t本月微粉成交单数/金额：%s\n\t",
 		report.Date, report.MonthGoal, report.DaySell, report.MonthSell, report.CmlRate, report.Diff, report.TurnOverRate, report.BookingMonyRate, report.BookingComeRate,report.BookingComeTurnOverRate, report.DayFansAddition, report.MonthFansAddition, report.MonthFansAndMony)
 	return res
 }
