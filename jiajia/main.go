@@ -344,7 +344,7 @@ func printPart(parts []Part) string {
 }
 
 func printReport(report Report) string {
-	res := fmt.Sprintf("全国%s       \n全月目标：%s  \n日销售：%s      \n本月累计：%s        \n完成率：%s       \n差异：%s          \n成交率：%s       \n预约金额占比：%s      \n预约到店率:%s  \n预约到店成交率：%s  \n今日新增微粉：%s     \n本月新增微粉：%s       \n本月微粉成交单数/金额：%s\n",
+	res := fmt.Sprintf("全国%s\n全月目标：%s\n日销售：%s\n本月累计：%s\n完成率：%s\n差异：%s\n成交率：%s\n预约金额占比：%s\n预约到店率:%s\n预约到店成交率：%s\n今日新增微粉：%s\n本月新增微粉：%s\n本月微粉成交单数/金额：%s\n",
 		report.Date, report.MonthGoal, report.DaySell, report.MonthSell, report.CmlRate, report.Diff, report.TurnOverRate, report.BookingMonyRate, report.BookingComeRate, report.BookingComeTurnOverRate, report.DayFansAddition, report.MonthFansAddition, report.MonthFansAndMony)
 	return res
 }
