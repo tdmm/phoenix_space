@@ -121,7 +121,7 @@ func parse(textarea string) (res string, err error) {
 
 	//解析具体数据
 	var daySold, monthSold, CmlRate, diff, turnoverCml, turnoverGoal, booking1, booking2, bookingcome1, bookingcome2, monthfans1, monthfas2, dayfansAddtion, monthfansAddtion float64
-	var  bookingcometurnover1 ,bookingcometurnover2 float64
+	var bookingcometurnover1, bookingcometurnover2 float64
 	for _, part := range parts {
 		detail := part.Detail
 		daySold += detail.DaySold
@@ -132,8 +132,8 @@ func parse(textarea string) (res string, err error) {
 		booking2 += detail.BookingRate.Num2
 		bookingcome1 += detail.ComeOfBookRate.Num1
 		bookingcome2 += detail.ComeOfBookRate.Num2
-		bookingcometurnover1+=detail.TurnOfbookRate.Num1
-		bookingcometurnover2+=detail.TurnOfbookRate.Num2
+		bookingcometurnover1 += detail.TurnOfbookRate.Num1
+		bookingcometurnover2 += detail.TurnOfbookRate.Num2
 		monthfans1 += detail.MonthFansAndTurnOfRate.Num1
 		monthfas2 += detail.MonthFansAndTurnOfRate.Num2
 		dayfansAddtion += detail.DayFansAddition
@@ -145,24 +145,24 @@ func parse(textarea string) (res string, err error) {
 	end := time.Date(now.Year(), now.Month()+1, 1, 0, 0, 0, 0, time.UTC)
 	end = end.AddDate(0, 0, -1)
 
-	diff = CmlRate-(float64(now.Day()) / float64(end.Day()))
+	diff = CmlRate - (float64(now.Day()) / float64(end.Day()))
 
 	//统计数据
 
 	report := Report{
-		Date:                    time.Now().Format("2006-01-02"),                                                         //日期
-		MonthGoal:               fmt.Sprintf("%+v亿", goal/10000),                                                         //月目标
-		DaySell:                 fmt.Sprintf("%+v万(%.2f%%)", (daySold), daySold/goal*100),                                    //日销售
-		MonthSell:               fmt.Sprintf("%.2f万", monthSold),                                                         //月销售
-		CmlRate:                 fmt.Sprintf("%.2f%%", CmlRate*100),                                                      // string //完成率
-		Diff:                    fmt.Sprintf("%.2f%%", diff),                                                             //string //差异
-		TurnOverRate:            fmt.Sprintf("%.2f%% (%d/%d)", turnoverCml/turnoverGoal*100, int(turnoverCml),int(turnoverGoal) ), //string //成交率
-		BookingMonyRate:         fmt.Sprintf("%.2f%% /%.0f万", booking2/monthSold*100, booking2),                               //string //预约金额占比
-		BookingComeRate:         fmt.Sprintf("%.2f%%（%.0f/%.0f）", bookingcome1/bookingcome2*100,bookingcome1,bookingcome2),                                        //string //预约到店率
-		BookingComeTurnOverRate: fmt.Sprintf("%.2f%%(%.0f/%.0f)", bookingcometurnover1/bookingcometurnover2*100,bookingcometurnover1,bookingcometurnover2),      //预约到店成交率                                   //预约到店成交率
-		DayFansAddition:         fmt.Sprintf("%d", int(dayfansAddtion)),                                                  // string //今日新增微粉
-		MonthFansAddition:       fmt.Sprintf("%d", int(monthfansAddtion)),                                                //string //本月新增微粉
-		MonthFansAndMony:        fmt.Sprintf("%+v/%+v  (占比 %.2f%%)", monthfans1, monthfas2,monthfas2/monthSold*100),                                          //string //本月微粉成交单数/金额
+		Date:                    time.Now().Format("2006-01-02"),                                                                                             //日期
+		MonthGoal:               fmt.Sprintf("%+v亿", goal/10000),                                                                                             //月目标
+		DaySell:                 fmt.Sprintf("%+v万(%.2f%%)", (daySold), daySold/goal*100),                                                                    //日销售
+		MonthSell:               fmt.Sprintf("%.2f万", monthSold),                                                                                             //月销售
+		CmlRate:                 fmt.Sprintf("%.2f%%", CmlRate*100),                                                                                          // string //完成率
+		Diff:                    fmt.Sprintf("%.2f%%", diff*100),                                                                                             //string //差异
+		TurnOverRate:            fmt.Sprintf("%.2f%% (%d/%d)", turnoverCml/turnoverGoal*100, int(turnoverCml), int(turnoverGoal)),                            //string //成交率
+		BookingMonyRate:         fmt.Sprintf("%.2f%% /%.0f万", booking2/monthSold*100, booking2),                                                              //string //预约金额占比
+		BookingComeRate:         fmt.Sprintf("%.2f%%（%.0f/%.0f）", bookingcome1/bookingcome2*100, bookingcome1, bookingcome2),                                 //string //预约到店率
+		BookingComeTurnOverRate: fmt.Sprintf("%.2f%%(%.0f/%.0f)", bookingcometurnover1/bookingcometurnover2*100, bookingcometurnover1, bookingcometurnover2), //预约到店成交率                                   //预约到店成交率
+		DayFansAddition:         fmt.Sprintf("%d", int(dayfansAddtion)),                                                                                      // string //今日新增微粉
+		MonthFansAddition:       fmt.Sprintf("%d", int(monthfansAddtion)),                                                                                    //string //本月新增微粉
+		MonthFansAndMony:        fmt.Sprintf("%+v/%+v  (占比 %.2f%%)", monthfans1, monthfas2, monthfas2/monthSold*100),                                         //string //本月微粉成交单数/金额
 	}
 
 	res = printPart(parts) + "\n\n" + printReport(report)
@@ -345,7 +345,7 @@ func printPart(parts []Part) string {
 
 func printReport(report Report) string {
 	res := fmt.Sprintf("全国%s       \n\t全月目标：%s  \n\t日销售：%s      \n\t本月累计：%s        \n\t完成率：%s       \n\t差异：%s          \n\t成交率：%s       \n\t预约金额占比：%s      \n\t预约到店率:%s  \n\t预约到店成交率：%s  \n\t今日新增微粉：%s     \n\t本月新增微粉：%s       \n\t本月微粉成交单数/金额：%s\n\t",
-		report.Date, report.MonthGoal, report.DaySell, report.MonthSell, report.CmlRate, report.Diff, report.TurnOverRate, report.BookingMonyRate, report.BookingComeRate,report.BookingComeTurnOverRate, report.DayFansAddition, report.MonthFansAddition, report.MonthFansAndMony)
+		report.Date, report.MonthGoal, report.DaySell, report.MonthSell, report.CmlRate, report.Diff, report.TurnOverRate, report.BookingMonyRate, report.BookingComeRate, report.BookingComeTurnOverRate, report.DayFansAddition, report.MonthFansAddition, report.MonthFansAndMony)
 	return res
 }
 
