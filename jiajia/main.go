@@ -211,7 +211,7 @@ func readText(c echo.Context) error {
 
 	dateform := c.FormValue("time")
 	if dateform != "" {
-		date, err := time.Parse(dateform, "2006-01-02")
+		date, err := time.Parse("2006-01-02",dateform )
 		if err != nil {
 			fmt.Println("error", err.Error())
 			return c.String(http.StatusOK, err.Error())
