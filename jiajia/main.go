@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -11,6 +12,9 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
+
+var monthgoal float64 //= 19400.0 //万
+var now time.Time
 
 func main() {
 
@@ -139,9 +143,8 @@ func parse(textarea string) (res string, err error) {
 		dayfansAddtion += detail.DayFansAddition
 		monthfansAddtion += detail.MonthFansAddition
 	}
-	CmlRate = monthSold / goal
+	CmlRate = monthSold / monthgoal
 
-	now := time.Now()
 	end := time.Date(now.Year(), now.Month()+1, 1, 0, 0, 0, 0, time.UTC)
 	end = end.AddDate(0, 0, -1)
 
@@ -150,9 +153,9 @@ func parse(textarea string) (res string, err error) {
 	//统计数据
 
 	report := Report{
-		Date:                    time.Now().Format("2006-01-02"),                                                                                             //日期
-		MonthGoal:               fmt.Sprintf("%+v亿", goal/10000),                                                                                             //月目标
-		DaySell:                 fmt.Sprintf("%+v万(%.2f%%)", (daySold), daySold/goal*100),                                                                    //日销售
+		Date:                    now.Format("2006-01-02"),                                                                                                    //日期
+		MonthGoal:               fmt.Sprintf("%+v亿", monthgoal/10000),                                                                                        //月目标
+		DaySell:                 fmt.Sprintf("%+v万(%.2f%%)", (daySold), daySold/monthgoal*100),                                                               //日销售
 		MonthSell:               fmt.Sprintf("%.2f万", monthSold),                                                                                             //月销售
 		CmlRate:                 fmt.Sprintf("%.2f%%", CmlRate*100),                                                                                          // string //完成率
 		Diff:                    fmt.Sprintf("%.2f%%", diff*100),                                                                                             //string //差异
@@ -182,6 +185,42 @@ func index(c echo.Context) error {
 
 func readText(c echo.Context) error {
 
+	str := c.FormValue("monthgoal")
+	if str == "" {
+		contents, err := ioutil.ReadFile("monthgoal")
+		if err != nil {
+			fmt.Println("error", err.Error())
+			return c.String(http.StatusOK, "wrong monthgoal file")
+		}
+		fmt.Println("get contents from file ", string(contents))
+		str = string(contents)
+	}
+	monthgoal2, err := strconv.ParseFloat(str, 10)
+	if err != nil {
+		fmt.Println("error", err.Error())
+		return c.String(http.StatusOK, "wrong monthgoal")
+	}
+
+	monthgoal = monthgoal2
+
+	err = ioutil.WriteFile("monthgoal", []byte(str), 0666)
+	if err != nil {
+		fmt.Println("error", err.Error())
+		return c.String(http.StatusOK, err.Error())
+	}
+
+	dateform := c.FormValue("time")
+	if dateform != "" {
+		date, err := time.Parse(dateform, "2006-01-02")
+		if err != nil {
+			fmt.Println("error", err.Error())
+			return c.String(http.StatusOK, err.Error())
+		}
+		now = date
+	} else {
+		now = time.Now().AddDate(0, 0, -1)
+	}
+
 	texts := c.FormValue("area")
 
 	res, err := parse(texts)
@@ -192,8 +231,6 @@ func readText(c echo.Context) error {
 	return c.String(http.StatusOK, res)
 
 }
-
-const goal = 19400.0 //万
 
 type Rate struct {
 	Num1 float64
@@ -369,10 +406,12 @@ var htmlmsg = `<!doctype html>
 <h1>请佳佳把信息粘贴到这里</h1>
 
 <form action="/text" method="post" enctype="multipart/form-data">
-   <textarea rows="10" cols="30" name="area">
-
-</textarea>
+    月目标(默认上次的数字): <input type="text" name="monthgoal"><br>
+    日期(格式2006-01-02默认昨天): <input type="text" name="time"><br>
+    <textarea rows="10" cols="30" name="area">
+   </textarea>
     <input type="submit" value="Submit">
+
 </form>
 </body>
 </html>`
